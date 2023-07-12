@@ -1,22 +1,24 @@
 class BankAccount:
-    def __init__(self, name, accountNumber, balance=0):
+    def __init__(self, name, accountNumber, balance):
         self.balance = balance
         self.name = name
         self.accountNumber = accountNumber
 
     def withdrawMoney(self, amount):
         if self.balance - amount < 0:
-            raise ValueError("You can't withdraw more money than in your balance")
+            raise ValueError(
+                "You can't withdraw more money than you have in your balance."
+            )
         else:
             self.balance -= amount
 
     def depositMoney(self, amount):
         if amount < 0:
-            raise ValueError("Invalid Amount")
+            raise ValueError(
+                "This is an invalid amount, please enter a positive amount."
+            )
         else:
             self.balance += amount
 
     def printBalance(self):
-        print(
-            self.name + "(Account " + self.accountNumber + ")'s Balance:" + self.balance
-        )
+        print(f"You have {self.balance} in your balance.")
