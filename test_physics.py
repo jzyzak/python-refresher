@@ -17,5 +17,5 @@ class TestPhysics(unittest.TestCase):
 
     def test_calculatePressure(self):
         self.assertEqual(physics.calculate_pressure(1.0), 9810)
-        self.assertNotEqual(physics.calculate_buoyancy(100.0), 9810)
+        self.assertNotEqual(physics.calculate_pressure(100.0), 9810)
         self.assertRaises(ValueError, physics.calculate_pressure, -1.0)
