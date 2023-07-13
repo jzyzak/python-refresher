@@ -5,6 +5,7 @@ import physics
 class TestPhysics(unittest.TestCase):
     def test_calculateBuoyancy(self):
         self.assertEqual(physics.calculate_buoyancy(10.0, 10.0), 981)
+        self.assertNotEqual(physics.calculate_buoyancy(100.0, 10.0), 981)
         self.assertRaises(ValueError, physics.calculate_buoyancy, -1.0, 10.0)
         self.assertRaises(ValueError, physics.calculate_buoyancy, 10.0, -1.0)
 
@@ -16,4 +17,5 @@ class TestPhysics(unittest.TestCase):
 
     def test_calculatePressure(self):
         self.assertEqual(physics.calculate_pressure(1.0), 9810)
+        self.assertNotEqual(physics.calculate_buoyancy(100.0), 9810)
         self.assertRaises(ValueError, physics.calculate_pressure, -1.0)
