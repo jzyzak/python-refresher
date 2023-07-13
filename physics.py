@@ -2,16 +2,25 @@ import numpy as np
 
 
 def calculate_buoyancy(V, density_fluid):
-    return density_fluid * V * 9.81
+    if density_fluid < 0 or V < 0:
+        raise ValueError("Volume and fluid density cannot be negative.")
+    else:
+        return density_fluid * V * 9.81
 
 
 def will_it_float(V, mass):
-    density_object = mass / V
-    if density_object > 1000:
-        return False
+    if V < 0 or mass < 0:
+        raise ValueError("Volume and mass cannot be negative.")
     else:
-        return True
+        density_object = mass / V
+        if density_object > 1000:
+            return False
+        else:
+            return True
 
 
 def calculate_pressure(depth):
-    return 1000 * 9.81 * depth
+    if depth < 0:
+        raise ValueError("Depth cannot be negative.")
+    else:
+        return 1000 * 9.81 * depth
