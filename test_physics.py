@@ -1,6 +1,7 @@
 import unittest
 import physics
 import numpy as np
+import math
 
 
 class TestPhysics(unittest.TestCase):
@@ -43,18 +44,25 @@ class TestPhysics(unittest.TestCase):
         self.assertRaises(ValueError, physics.calculate_moment_of_inertia, 10, -5)
 
     def test_calculateAUVAcceleration(self):
-        self.assertEqual(
-            physics.calculate_auv_acceleration(100, np.pi / 6), np.array([])
-        )
+        test = physics.calculate_auv_acceleration(100, np.pi/6)
+        acceleration = np.array([0.8660254037844388, 0.5])
+        self.assertAlmostEqual(test[0], acceleration[0])
+        self.assertAlmostEqual(test[1], acceleration[1])
 
     def test_calculateAUVAngularAcceleration(self):
-        pass
+        self.assertAlmostEquals(physics.calculate_auv_angular_acceleration(100, np.pi/6), 25)
+        self.assertRaises(ValueError,physics.calculate_auv_angular_acceleration,200,np.pi/6)
+        self.assertRaises(ValueError,physics.calculate_auv_angular_acceleration,100,0)
+        #self.assertNotEqual(physics.calculate_auv_angular_acceleration())
 
     def test_calculateAUV2Acceleration(self):
-        pass
+        testArray = np.array([1, 3, 1, 2])
+        result = physics.calculate_auv2_acceleration(testArray, 0.5, 0.3)
+        self.assertEqual(result[0], 0.009800665778412416)
+        self.assertEqual(result[1], -0.001986693307950612)
 
     def test_calculateAUV2AngularAcceleration(self):
-        pass
+        self.assertEqual(physics.calculate_auv2_angular_acceleration(np.array([1,3,1,2]), 0.5, 1.5, 1.8), -0.06896360757926927)
 
 
 if __name__ == "__main__":
