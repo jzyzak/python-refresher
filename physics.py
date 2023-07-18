@@ -171,18 +171,25 @@ def calculate_auv2_acceleration(T, alpha, theta, mass=100):
 
 
 def calculate_auv2_angular_acceleration(T, alpha, L, l, inertia=100):
-    """Calculates the angular acceleration of the AUV when accounting for all four thrusters"""
+    """
+    Calculates the angular acceleration of the AUV when accounting for all four thrusters
+    T: an np.ndarray of the magnitudes of the forces applied by the thrusters in Newtons
+    alpha: the angle of the thrusters in radians
+    theta: the angle of the AUV in radians
+    mass: the mass of the AUV in kilograms. The default value is 100kg.
+    """
+
     #if type(T) != np.ndarray:
         #raise ValueError("T should be a numpy array.")
-    #elif np.shape(T) != (1,4):
-        #raise ValueError("T should have the shape (1,4).")
+    #elif np.shape(T) != (4,1):
+        #raise ValueError("T should have the shape (4,1).")
     if L < 0 or l < 0:
         raise ValueError("L or l cannot be negative.")
     elif inertia <= 0:
         raise ValueError("Inertia cannot be negative or less than or equal to 0.")
     else:
         signs_matrix = np.array([1, -1, 1, -1])
-        r = np.sqrt(np.power(L,2) + np.power(l, 2))
+        #r = np.sqrt(np.power(L,2) + np.power(l, 2))
         torque = np.sum(np.multiply(signs_matrix, T) * (L*np.sin(alpha) + l*np.cos(alpha)))
         #torque = np.dot(signs_matrix,T)
         angular_acceleration = torque / inertia
@@ -190,6 +197,16 @@ def calculate_auv2_angular_acceleration(T, alpha, L, l, inertia=100):
         return angular_acceleration
     
 def simulate_auv2_motion(T, alpha, L, l, inertia=100, dt=0.1, t_final=10, x0=0, y0=0, theta0=0):
+    '''
+    Simulates the motion of the AUV in the 2D plane.
+    T: an np.ndarray of the magnitudes of the forces applied by the thrusters in Newtons.
+    alpha: the angle of the thrusters in radians.
+    L: the distance from the center of mass of the AUV to the thrusters in meters.
+    l: the distance from the center of mass of the AUV to the thrusters in meters.
+    inertia (optional): the moment of inertia of the AUV in kg*m^2. The default value is 100 kg*m^2
+    '''
+
+    # Initializes numpy arrays with zeros
     t = np.arange(0, t_final, dt)
     
     x = np.zeros_like(t)
@@ -209,18 +226,31 @@ def simulate_auv2_motion(T, alpha, L, l, inertia=100, dt=0.1, t_final=10, x0=0, 
     a= np.zeros((len(t), 2))
     v = np.zeros((len(t), 2))
     
+    # Calculates the angular acceleration outside of the for loop because parameters are constant
     angular_acceleration = calculate_auv2_angular_acceleration(T, alpha, L, l)
     
     for i in range(1, len(t)):
+        # uses the previous angular velocity and angular acceleration to calculate the current angular velocity
         omega[i] = omega[i-1] + angular_acceleration * dt
+
+        # uses the previous angle and the previous angular velocity to calculate the current angle
         theta[i] = theta[i-1] + omega[i-1] * dt 
+
+        # initializes a temporary array to store the x and y components of acceleration
         temp_a = calculate_auv2_acceleration(T, alpha, theta[i-1])
+
+        # assigns the x and y components of acceleration to the proper indices of matrix a
         a[i][0] = temp_a[0]
         a[i][1] = temp_a[1]
+
+        # uses the previous x/y velocities and the previous x/y accelerationies to calculate the current x/y velocities
         v[i][0] = v[i-1][0] + a[i-1][0] * dt
         v[i][1] = v[i-1][1] + a[i-1][1] * dt
+
+        # uses the previous x/y positions and the previous x/y velocities to calculate the current x/y positions
         x[i] = x[i-1] + v[i-1][0] * dt
         y[i] = y[i-1] + v[i-1][1] * dt
+
         #ax = temp_a[0]
         #ay = temp_a[1]
         #a[i] = np.sqrt(np.power(ax,2) + np.power(ay,2))
@@ -231,6 +261,7 @@ def simulate_auv2_motion(T, alpha, L, l, inertia=100, dt=0.1, t_final=10, x0=0, 
     return t, x, y, theta, v, omega, a
 
 def plot_auv2_motion(t, x, y, theta, v, omega, a):
+    # Plots :)
     plt.plot(t, x, label="X Position")
     plt.plot(t, y, label="Y Position")
     plt.plot(t, theta, label="Angle")
